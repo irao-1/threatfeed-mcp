@@ -2,7 +2,7 @@
 
 Implementation of a real-time threat intelligence aggregator
 
-**Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats, and provides web dashboard, CLI, and optional MCP interfaces.
+**Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats and provides web dashboard, CLI, and optional MCP interfaces.
 
 [![Status: Showcase](https://img.shields.io/badge/Status-Showcase%20Project-blue?style=flat-square)](CONTRIBUTING.md)
 [![Security: Reviewed](https://img.shields.io/badge/Security-Reviewed-green?style=flat-square)](SECURITY.md)
@@ -22,7 +22,7 @@ ThreatFeed automatically:
 
 ---
 
-## 🚀 Quick Start
+## 🎯 Ready to Start?
 
 ```bash
 # Setup (one time)
@@ -110,11 +110,6 @@ Dependencies auto-installed by `setup.sh`
 
 ## 🐛 Troubleshooting
 
-**Port 8000 already in use?**
-```bash
-python src/dashboard.py --port 8001
-```
-
 **Missing dependencies?**
 ```bash
 source venv/bin/activate
@@ -134,12 +129,3 @@ MIT License - See [LICENSE](LICENSE) file
 
 ---
 
-## 🎯 Ready to Start?
-
-```bash
-./setup.sh && python src/dashboard.py
-```
-
-Then open: **http://localhost:8000** 🚀
-
----
