@@ -8,7 +8,7 @@ from models import Threat
 from utils import (
     extract_cves, generate_id, score_severity,
     categorize_threat, extract_keywords, calculate_confidence,
-    parse_rfc822_date, similarity_score
+    parse_rfc822_date, similarity_score, strip_html
 )
 from .cisa_kev_source import CISAKEVSource
 
@@ -47,6 +47,8 @@ class RSSSource:
         """Parse RSS entry into Threat object."""
         title = entry.get('title', 'No title')
         summary = entry.get('summary', '') or entry.get('description', '')
+        # Strip HTML tags from summary
+        summary = strip_html(summary)
         link = entry.get('link', '')
 
         if not link:

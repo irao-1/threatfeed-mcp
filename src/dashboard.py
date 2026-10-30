@@ -36,7 +36,8 @@ class SearchRequest(BaseModel):
     category: Optional[str] = None
     source: Optional[str] = None
     days: int = 7
-    limit: int = 50
+    limit: int = 25
+    page: int = 1
 
 
 class ThreatResponse(BaseModel):
@@ -54,24 +55,50 @@ class ThreatResponse(BaseModel):
 
 # API Routes
 @app.get("/api/threats/recent")
-async def get_recent_threats(days: int = 7, limit: int = 50):
-    """Get recent threats (operational only)."""
-    all_threats = agg.get_recent_threats(limit=limit*3, days=days)
-    threats = filter_operational_threats(all_threats)[:limit]
+async def get_recent_threats(days: int = 7, limit: int = 25, page: int = 1, source: Optional[str] = None):
+    """Get recent threats with pagination and source filter (operational only)."""
+    all_threats = agg.get_recent_threats(limit=limit*4, days=days)
+    threats = filter_operational_threats(all_threats)
+
+    # Filter by source if provided
+    if source:
+        threats = [t for t in threats if t.source == source]
+
+    # Calculate pagination
+    offset = (page - 1) * limit
+    paginated_threats = threats[offset:offset + limit]
+
     return {
-        "count": len(threats),
-        "threats": [t.to_dict() for t in threats]
+        "count": len(paginated_threats),
+        "total": len(threats),
+        "page": page,
+        "limit": limit,
+        "pages": (len(threats) + limit - 1) // limit if threats else 1,
+        "threats": [t.to_dict() for t in paginated_threats]
     }
 
 
 @app.get("/api/threats/critical")
-async def get_critical_threats(limit: int = 20):
-    """Get critical threats (operational only)."""
-    all_threats = agg.get_critical_threats(limit=limit*2)
-    threats = filter_operational_threats(all_threats)[:limit]
+async def get_critical_threats(limit: int = 25, page: int = 1, source: Optional[str] = None):
+    """Get critical threats with pagination and source filter (operational only)."""
+    all_threats = agg.get_critical_threats(limit=limit*4)
+    threats = filter_operational_threats(all_threats)
+
+    # Filter by source if provided
+    if source:
+        threats = [t for t in threats if t.source == source]
+
+    # Calculate pagination
+    offset = (page - 1) * limit
+    paginated_threats = threats[offset:offset + limit]
+
     return {
-        "count": len(threats),
-        "threats": [t.to_dict() for t in threats]
+        "count": len(paginated_threats),
+        "total": len(threats),
+        "page": page,
+        "limit": limit,
+        "pages": (len(threats) + limit - 1) // limit if threats else 1,
+        "threats": [t.to_dict() for t in paginated_threats]
     }
 
 

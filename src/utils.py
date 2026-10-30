@@ -4,7 +4,36 @@ import re
 import hashlib
 from datetime import datetime
 from typing import List, Tuple
+from html.parser import HTMLParser
 from models import SeverityLevel, ThreatCategory
+
+
+class HTMLStripper(HTMLParser):
+    """Strip HTML tags from text."""
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.text = []
+
+    def handle_data(self, d):
+        self.text.append(d)
+
+    def get_data(self):
+        return ''.join(self.text).strip()
+
+
+def strip_html(text: str) -> str:
+    """Remove HTML tags from text and clean up whitespace."""
+    if not text:
+        return ""
+    try:
+        s = HTMLStripper()
+        s.feed(text)
+        return s.get_data()
+    except:
+        return text
 
 
 # CVE pattern
