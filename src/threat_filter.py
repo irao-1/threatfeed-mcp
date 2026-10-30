@@ -113,9 +113,24 @@ def is_operational_threat(threat):
     Trusted sources get lenient filtering since they don't publish random news.
     """
     text = (threat.title + ' ' + threat.description).lower()
+    url = threat.url.lower() if threat.url else ""
     is_trusted_source = threat.source in TRUSTED_SOURCES
 
-    # FIRST: Check for BLOCKED keywords (marketing/noise) - ALWAYS filter these out
+    # FIRST: Check URL categories to exclude (products, announcements)
+    blocked_url_patterns = [
+        'products-and-services',
+        'announcements',
+        'press-releases',
+        'news',
+        '/news/',
+        '/company/',
+        '/careers/',
+    ]
+    for pattern in blocked_url_patterns:
+        if pattern in url:
+            return False
+
+    # SECOND: Check for BLOCKED keywords (marketing/noise) - ALWAYS filter these out
     for keyword in BLOCKED_KEYWORDS:
         if keyword.lower() in text:
             return False
