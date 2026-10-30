@@ -1,6 +1,12 @@
-# 🛡️ ThreatFeed
+# 🛡️ ThreatAtlas
+
+> **Showcase Project** — Reference implementation of a real-time threat intelligence aggregator
 
 **Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats, and provides web dashboard, CLI, and optional MCP interfaces.
+
+[![Status: Showcase](https://img.shields.io/badge/Status-Showcase%20Project-blue?style=flat-square)](CONTRIBUTING.md)
+[![Security: Reviewed](https://img.shields.io/badge/Security-Reviewed-green?style=flat-square)](SECURITY.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 ---
 
