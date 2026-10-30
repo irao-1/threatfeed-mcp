@@ -7,7 +7,7 @@
 ## ✨ What It Does
 
 ThreatFeed automatically:
-- 🌐 Monitors **4+ security sources** (Bleeping Computer, HackerNews, Reddit, SecurityWeek, CISA KEV)
+- 🌐 Monitors **6+ security sources currently** (Bleeping Computer, HackerNews, Reddit, SecurityWeek, CISA KEV)
 - 🔍 **Filters noise** - removes business news, keeps security threats only
 - 📊 **Scores severity** - automatically categorizes threats as critical/high/medium/low
 - 💾 **Stores locally** - 100% local SQLite database, no cloud
