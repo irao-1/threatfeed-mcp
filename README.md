@@ -1,198 +1,188 @@
-# ThreatFeed MCP - Threat Intelligence Aggregator
+# 🛡️ ThreatFeed
 
-A comprehensive threat intelligence aggregator that fetches security news and vulnerabilities from multiple sources (Palo Alto, HackerNews, Bleeping Computer, Twitter, Reddit), aggregates them intelligently, and exposes them via an MCP Server for Claude integration, plus a web dashboard for browsing.
+**Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats, and provides web dashboard, CLI, and optional MCP interfaces.
 
-## Features
+---
 
-✅ **Multi-Source Aggregation**
-- Palo Alto Security Blog
-- HackerNews (security-focused)
-- Bleeping Computer
-- Twitter/X (security accounts)
-- Reddit (r/cybersecurity, r/netsec)
-- CISA Alerts
+## ✨ What It Does
 
-✅ **Smart Processing**
-- Automatic deduplication across sources
-- Severity scoring based on keywords
-- Threat categorization (CVE, malware, breach, etc.)
-- Caching to avoid duplicate processing
+ThreatFeed automatically:
+- 🌐 Monitors **4+ security sources** (Bleeping Computer, HackerNews, Reddit, SecurityWeek, CISA KEV)
+- 🔍 **Filters noise** - removes business news, keeps security threats only
+- 📊 **Scores severity** - automatically categorizes threats as critical/high/medium/low
+- 💾 **Stores locally** - 100% local SQLite database, no cloud
+- 📱 **3 interfaces** - web dashboard, CLI commands, MCP for Claude
+- ⏰ **24/7 monitoring** - automatic hourly threat fetching
 
-✅ **MCP Server Integration**
-- Query threats directly from Claude
-- Semantic search across aggregated feeds
-- Filter by severity, source, or category
-- Real-time threat summaries
+---
 
-✅ **Web Dashboard**
-- Visual threat feed browser
-- Real-time updates
-- Search and filter capabilities
-- Dark theme optimized for security work
-
-✅ **Easy Deployment**
-- Single Python app with no external dependencies (except requests)
-- Runs locally or on any server
-- Automatic scheduled updates
-- SQLite database (no DB setup needed)
-
-## Quick Start
-
-### Prerequisites
-- Python 3.9+
-- Git
-
-### Installation
+## 🚀 Quick Start
 
 ```bash
-# Clone the repo
-git clone https://github.com/yourusername/threatfeed-mcp.git
-cd threatfeed-mcp
+# Setup (one time)
+./setup.sh
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Initialize database and run first fetch
-python src/aggregator.py --init
+# Start web dashboard
+python src/dashboard.py
 ```
 
-### Run the Aggregator
+Then open: **http://localhost:8000**
+
+---
+
+## 📋 Common Commands
 
 ```bash
-# Fetch threats (runs once)
-python src/aggregator.py --fetch
+# View statistics
+python src/aggregator.py --stats
 
-# Run with background scheduler (runs indefinitely, fetches every hour)
-python src/aggregator.py --daemon
+# See critical threats
+python src/aggregator.py --critical
 
-# Run the MCP Server
-python src/mcp_server.py
+# Search threats
+python src/aggregator.py --search "kubernetes" --severity high
 
-# Run the web dashboard
-python src/dashboard.py  # Visit http://localhost:8000
+# Run web dashboard
+python src/dashboard.py
+
+# Run background monitoring (hourly updates)
+python src/aggregator.py --daemon --interval 60 &
 ```
 
-## Project Structure
+---
 
-```
-threatfeed-mcp/
-├── src/
-│   ├── aggregator.py          # Core threat aggregator
-│   ├── mcp_server.py          # MCP Server implementation
-│   ├── dashboard.py           # Web dashboard (FastAPI)
-│   ├── sources/               # Feed source scrapers
-│   │   ├── rss_sources.py     # RSS feed handlers
-│   │   ├── twitter.py         # Twitter/X integration
-│   │   └── custom.py          # Custom scrapers
-│   ├── models.py              # Data models
-│   ├── database.py            # SQLite interactions
-│   └── utils.py               # Utilities
-├── docs/
-│   ├── ARCHITECTURE.md        # System design
-│   ├── MCP_INTEGRATION.md     # Claude MCP setup
-│   └── DEPLOYMENT.md          # Production deployment
-├── tests/
-│   ├── test_aggregator.py
-│   └── test_sources.py
-├── requirements.txt           # Python dependencies
-├── .gitignore
-├── LICENSE
-└── README.md
-```
+## 🔌 Use With Claude (Optional)
 
-## Usage Examples
-
-### As an MCP Server (Claude Integration)
-
-Install in Claude by adding to `claude_desktop_config.json`:
+Add to `~/.claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "threatfeed": {
       "command": "python",
-      "args": ["/path/to/src/mcp_server.py"]
+      "args": ["/path/to/threatfeed-mcp/src/mcp_server.py"]
     }
   }
 }
 ```
 
-Then in Claude:
-```
-"What are the top 5 critical vulnerabilities from this week?"
-"Show me threats related to Kubernetes"
-"Any ransomware alerts from Bleeping Computer today?"
-```
+Then ask Claude: *"What are this week's critical CVEs?"*
 
-### Via Python API
+---
 
-```python
-from aggregator import ThreatAggregator
-
-agg = ThreatAggregator()
-threats = agg.search("CVE", severity="critical", limit=10)
-for threat in threats:
-    print(f"{threat.title} - {threat.source} - {threat.severity}")
-```
-
-### Web Dashboard
-
-Open `http://localhost:8000` to browse and filter threats in real-time.
-
-## Configuration
+## 🛠️ Configuration
 
 Edit `config.yaml` to customize:
-- Fetch frequency (default: hourly)
-- Data retention (default: 30 days)
-- Severity thresholds
-- Source preferences
-- MCP server port
+- Database location
+- Update interval
+- Threat categories
+- Dashboard settings
 
-## Data Privacy
+---
 
-- **Local Storage**: By default, all data is stored locally in `data/threats.db`
-- **No External Calls**: Except to fetch from configured sources
-- **No Tracking**: Zero analytics or telemetry
+## 📚 Full Documentation
 
-## API Reference
+For detailed information:
 
-See [docs/API.md](docs/API.md) for complete API documentation.
+- **Setup & Installation** → `LOCAL_DOCS/GET_ZIP_TO_DESKTOP.md`
+- **All Commands** → `LOCAL_DOCS/WHAT_IS_THREATFEED.md`
+- **Using Without Claude** → `LOCAL_DOCS/WITHOUT_CLAUDE.md`
+- **Security Guidelines** → `LOCAL_DOCS/SECURITY_GUIDE.md`
+- **Platform Support** → `LOCAL_DOCS/PLATFORM_INDEPENDENCE.md`
+- **Testing Guide** → `LOCAL_DOCS/TERMINAL_TESTING_GUIDE.md`
+- **Example Outputs** → `LOCAL_DOCS/EXAMPLE_OUTPUTS.md`
 
-## Contributing
+---
 
-Contributions welcome! Please:
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/amazing-source`)
-3. Commit changes (`git commit -m 'Add support for new threat source'`)
-4. Push and open a Pull Request
+## 🛡️ Security
 
-## Roadmap
+✅ **Safe by Design:**
+- No code injection vulnerabilities
+- No SQL injection
+- Local storage only
+- HTTPS-only feeds
+- Trusted sources only
 
-- [ ] SQLAlchemy ORM integration
-- [ ] PostgreSQL support
-- [ ] Slack/email notifications
-- [ ] Threat correlation engine
-- [ ] Machine learning severity classification
-- [ ] GraphQL API
-- [ ] Docker compose setup
-- [ ] GitHub Actions for automated testing
+✅ **Repository Protected:**
+- Branch protection enabled
+- Dependabot alerts active
+- Secret scanning enabled
 
-## License
+---
 
-MIT License - see [LICENSE](LICENSE) file
+## 🌍 Platform Support
 
-## Support
+- ✅ **Mac** - Fully supported
+- ✅ **Linux** - Fully supported  
+- ✅ **Windows** - Supported with WSL2
 
-- 📖 [Documentation](docs/)
-- 🐛 [Issues](https://github.com/yourusername/threatfeed-mcp/issues)
-- 💬 Discussions
+---
 
-## Security
+## 📦 Requirements
 
-⚠️ This tool is for security research and monitoring. Use responsibly and respect rate limits of all data sources.
+- Python 3.9+
+- pip (Python package manager)
 
-Last updated: 2026-10-29
+Dependencies auto-installed by `setup.sh`
+
+---
+
+## 💬 Features You Get
+
+✅ Web dashboard (real-time browsing)
+✅ CLI interface (15+ commands)
+✅ Search & filter (by keyword, severity, source, date)
+✅ Automatic updates (hourly)
+✅ Background daemon (24/7 monitoring)
+✅ Local database (SQLite)
+✅ Data export (JSON/CSV)
+✅ Claude integration (optional MCP)
+
+---
+
+## 🐛 Troubleshooting
+
+**Port 8000 already in use?**
+```bash
+python src/dashboard.py --port 8001
+```
+
+**Missing dependencies?**
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Database issues?**
+```bash
+rm data/threats.db
+python src/aggregator.py --fetch
+```
+
+For more help, check `LOCAL_DOCS/TERMINAL_TESTING_GUIDE.md`
+
+---
+
+## 📝 License
+
+MIT License - See [LICENSE](LICENSE) file
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Please review security guidelines in `LOCAL_DOCS/SECURITY_GUIDE.md`
+
+---
+
+## 🎯 Ready to Start?
+
+```bash
+./setup.sh && python src/dashboard.py
+```
+
+Then open: **http://localhost:8000** 🚀
+
+---
+
+**Questions?** Check the docs in `LOCAL_DOCS/` folder
