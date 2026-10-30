@@ -2,12 +2,13 @@
 
 from models import ThreatCategory, SeverityLevel
 
-# TRUSTED SECURITY SOURCES - More lenient filtering
+# TRUSTED SECURITY SOURCES - More lenient filtering (dedicated security sites)
 TRUSTED_SOURCES = {
     'Unit42_Research',
     'Bleeping Computer',
     'The Hacker News',
     'CISA KEV',
+    'SecurityWeek',
 }
 
 # ONLY these count as real security threats
@@ -90,11 +91,12 @@ BLOCKED_KEYWORDS = {
     'press release', 'announces', 'marketplace', 'openai marketplace',
     'product launch', 'new product', 'new service',
     'partnership', 'partners with', 'integrates with',
-    'prisma', 'continuous ai defense', 'ai defense',
+    'prisma', 'continuous ai defense', 'ai defense', 'cortex xdr',
     'gartner magic quadrant', 'recognized as a leader',
     'privileged access management', 'pam', 'award',
     'eighth consecutive', 'positioned furthest',
     'products and services', 'introducing', 'managed agentic',
+    'reinventing', 'evolves its',
 
     # Non-security
     'ai model', 'gpt', 'llm', 'language model',
@@ -117,33 +119,47 @@ def is_operational_threat(threat):
     is_trusted_source = threat.source in TRUSTED_SOURCES
 
     # FIRST: Check URL categories to exclude (products, announcements)
-    blocked_url_patterns = [
-        'products-and-services',
-        'announcements',
-        'press-releases',
-        'news',
-        '/news/',
-        '/company/',
-        '/careers/',
-        '/category/announcement/',
-        '/category/partners/',
-        '/category/products-and-services/',
-    ]
-    for pattern in blocked_url_patterns:
-        if pattern in url:
-            return False
+    # For non-trusted sources, block /news/ category pages
+    # For trusted sources, only block specific product/announcement categories
+    if is_trusted_source:
+        # Trusted sources: only block specific categories
+        blocked_url_patterns_trusted = [
+            'products-and-services',
+            'announcements',
+            'press-releases',
+            '/category/announcement/',
+            '/category/partners/',
+            '/category/products-and-services/',
+            '/category/customer-spotlight/',
+        ]
+        for pattern in blocked_url_patterns_trusted:
+            if pattern in url:
+                return False
+    else:
+        # Non-trusted sources: block broader patterns including /news/
+        blocked_url_patterns = [
+            'products-and-services',
+            'announcements',
+            'press-releases',
+            'news',
+            '/news/',
+            '/company/',
+            '/careers/',
+            '/category/announcement/',
+            '/category/partners/',
+            '/category/products-and-services/',
+            '/category/customer-spotlight/',
+        ]
+        for pattern in blocked_url_patterns:
+            if pattern in url:
+                return False
 
-    # SECOND: Check for BLOCKED keywords (marketing/noise) - ALWAYS filter these out
-    for keyword in BLOCKED_KEYWORDS:
-        if keyword.lower() in text:
-            return False
-
-    # SAFETY VALVE 1: Check for critical threat indicators (always retain)
+    # SECOND: CRITICAL KEYWORDS always pass (universal safety valve)
     for keyword in CRITICAL_KEYWORDS:
         if keyword.lower() in text:
             return True
 
-    # SAFETY VALVE 2: Check for monitored products (always retain)
+    # THIRD: Monitored products always pass (universal safety valve)
     monitored_products = {'fortigate', 'cisco', 'citrix', 'pan-os', 'palo alto',
                          'ivanti', 'sonicwall', 'check point', 'f5',
                          'microsoft', 'vmware', 'veeam', 'splunk', 'servicenow'}
@@ -151,19 +167,13 @@ def is_operational_threat(threat):
         if product.lower() in text:
             return True
 
-    # TRUSTED SOURCES: More lenient - but still filter marketing
+    # TRUSTED SOURCES: Accept operational content without keyword filtering
     if is_trusted_source:
-        # ALWAYS block marketing content, even from trusted sources
-        for keyword in BLOCKED_KEYWORDS:
-            if keyword.lower() in text:
-                return False
-        # For trusted sources, accept if it's security-related or operational category
+        # Accept if in operational categories (don't check BLOCKED_KEYWORDS!)
         if threat.category in OPERATIONAL_CATEGORIES:
             return True
-        # General category from trusted sources: only if no blocked keywords
-        # and has security-related content
+        # For GENERAL from trusted: only if has security keywords
         if threat.category == ThreatCategory.GENERAL:
-            # If text contains actual security terms, keep it
             security_terms = ['cve', 'vulnerability', 'exploit', 'malware', 'breach',
                             'ransomware', 'attack', 'threat', 'compromised', 'exposed',
                             'vulnerable', 'patch', 'fix', 'mitigation', 'detection']
@@ -171,24 +181,22 @@ def is_operational_threat(threat):
                 return True
         return False
 
-    # NON-TRUSTED SOURCES: Strict filtering - must have security keywords
-    # Don't accept GENERAL category from untrusted sources without security terms
+    # NON-TRUSTED SOURCES: Strict filtering - check BLOCKED_KEYWORDS first
+    for keyword in BLOCKED_KEYWORDS:
+        if keyword.lower() in text:
+            return False
+
+    # Must be in operational categories
+    if threat.category not in OPERATIONAL_CATEGORIES:
+        return False
+
+    # For general category: must have security keywords
     if threat.category == ThreatCategory.GENERAL:
         security_terms = ['cve', 'vulnerability', 'exploit', 'malware', 'breach',
                          'ransomware', 'attack', 'threat', 'compromised', 'exposed',
                          'vulnerable', 'patch', 'fix', 'mitigation', 'detection',
                          'security', 'hack', 'rce', 'exploit', 'vulnerability']
         if not any(term in text for term in security_terms):
-            return False
-        return True
-
-    # For operational categories, still need to be strict
-    if threat.category not in OPERATIONAL_CATEGORIES:
-        return False
-
-    # Check for blocked keywords (suppress non-security noise)
-    for keyword in BLOCKED_KEYWORDS:
-        if keyword.lower() in text:
             return False
 
     return True
