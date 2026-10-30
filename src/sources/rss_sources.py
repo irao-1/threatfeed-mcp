@@ -104,11 +104,11 @@ THREAT_SOURCES = {
         'https://www.securityweek.com/feed/'
     ),
     'paloalto_research': RSSSource(
-        'ResearchCentre',
+        'Palo_Research',
         'https://researchcenter.paloaltonetworks.com/feed/'
     ),
     'paloalto_blog': RSSSource(
-        'Blog',
+        'Palo_Blog',
         'https://www.paloaltonetworks.com/blog/feed/'
      ),
     'cisa_kev': CISAKEVSource(),
