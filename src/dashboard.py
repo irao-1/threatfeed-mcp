@@ -56,11 +56,9 @@ class ThreatResponse(BaseModel):
 # API Routes
 @app.get("/api/threats/recent")
 async def get_recent_threats(days: int = 7, limit: int = 25, page: int = 1, source: Optional[str] = None):
-    """Get recent threats with pagination and source filter."""
+    """Get recent threats with pagination and source filter (operational only)."""
     all_threats = agg.get_recent_threats(limit=limit*4, days=days)
-
-    # Don't double-filter - threats already filtered during aggregation
-    threats = all_threats
+    threats = filter_operational_threats(all_threats)
 
     # Filter by source if provided
     if source:
@@ -82,11 +80,9 @@ async def get_recent_threats(days: int = 7, limit: int = 25, page: int = 1, sour
 
 @app.get("/api/threats/critical")
 async def get_critical_threats(limit: int = 25, page: int = 1, source: Optional[str] = None):
-    """Get critical threats with pagination and source filter."""
+    """Get critical threats with pagination and source filter (operational only)."""
     all_threats = agg.get_critical_threats(limit=limit*4)
-
-    # Don't double-filter - threats already filtered during aggregation
-    threats = all_threats
+    threats = filter_operational_threats(all_threats)
 
     # Filter by source if provided
     if source:

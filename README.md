@@ -1,8 +1,8 @@
 # 🛡️ ThreatAtlas
 
-> **Showcase Project** — Reference implementation of a real-time threat intelligence aggregator
+Implementation of a real-time threat intelligence aggregator
 
-**Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats, and provides web dashboard, CLI, and optional MCP interfaces.
+**Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats and provides web dashboard, CLI, and optional MCP interfaces.
 
 [![Status: Showcase](https://img.shields.io/badge/Status-Showcase%20Project-blue?style=flat-square)](CONTRIBUTING.md)
 [![Security: Reviewed](https://img.shields.io/badge/Security-Reviewed-green?style=flat-square)](SECURITY.md)
@@ -23,7 +23,7 @@ ThreatAtlas automatically:
 
 ---
 
-## 🚀 Quick Start
+## 🎯 Ready to Start?
 
 ```bash
 # Setup (one time)
@@ -111,11 +111,6 @@ Dependencies auto-installed by `setup.sh`
 
 ## 🐛 Troubleshooting
 
-**Port 8000 already in use?**
-```bash
-python src/dashboard.py --port 8001
-```
-
 **Missing dependencies?**
 ```bash
 source venv/bin/activate
@@ -143,11 +138,11 @@ MIT License - See [LICENSE](LICENSE) file
 
 ---
 
-## 🤖 Built with Claude
+## 👤 Credits
 
-This project was developed using [Claude](https://claude.ai) AI. The architecture, filtering logic, dashboard design, and security implementation were all designed and built with AI assistance.
+<sub>🔧 **Conceived, designed, and developed by Ais**
 
-For technical details, security information, and contribution guidelines, see [SECURITY.md](SECURITY.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
 
 ---
 
@@ -157,6 +152,6 @@ For technical details, security information, and contribution guidelines, see [S
 ./setup.sh && python src/dashboard.py
 ```
 
-Then open: **http://localhost:8000** 🚀
+Then open: **http://localhost:8001** 🚀
 
 ---

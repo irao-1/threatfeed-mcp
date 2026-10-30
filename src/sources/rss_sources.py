@@ -94,8 +94,8 @@ THREAT_SOURCES = {
         'https://www.bleepingcomputer.com/feed/'
     ),
     'hackernews': RSSSource(
-        'HackerNews',
-        'https://news.ycombinator.com/rss'
+        'The Hacker News',
+        'http://thehackernews.com/feeds/posts/default'
     ),
     'reddit_netsec': RSSSource(
         'Reddit r/netsec',
