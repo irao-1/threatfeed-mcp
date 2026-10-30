@@ -11,6 +11,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from models import Threat, FetchResult, SearchQuery, Stats, SeverityLevel
 from database import ThreatDatabase
 from sources.rss_sources import fetch_all_threats, THREAT_SOURCES
+from threat_filter import filter_operational_threats
 
 # Setup logging
 logging.basicConfig(
@@ -37,10 +38,14 @@ class ThreatAggregator:
             total_fetched = sum(s['fetched'] for s in stats.values())
             logger.info(f"Total threats fetched: {total_fetched}")
 
+            # Filter to only operational threats
+            filtered_threats = filter_operational_threats(all_threats)
+            logger.info(f"After filtering: {len(filtered_threats)} operational threats")
+
             new_count = 0
             duplicate_count = 0
 
-            for threat in all_threats:
+            for threat in filtered_threats:
                 if threat.is_duplicate:
                     duplicate_count += 1
                 else:

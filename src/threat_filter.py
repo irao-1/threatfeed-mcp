@@ -5,9 +5,8 @@ from models import ThreatCategory, SeverityLevel
 # TRUSTED SECURITY SOURCES - More lenient filtering
 TRUSTED_SOURCES = {
     'Unit42_Research',
-    'Palo_Blog',
     'Bleeping Computer',
-    'SecurityWeek',
+    'The Hacker News',
     'CISA KEV',
 }
 
@@ -172,7 +171,18 @@ def is_operational_threat(threat):
                 return True
         return False
 
-    # NON-TRUSTED SOURCES: Strict filtering - must be operational category
+    # NON-TRUSTED SOURCES: Strict filtering - must have security keywords
+    # Don't accept GENERAL category from untrusted sources without security terms
+    if threat.category == ThreatCategory.GENERAL:
+        security_terms = ['cve', 'vulnerability', 'exploit', 'malware', 'breach',
+                         'ransomware', 'attack', 'threat', 'compromised', 'exposed',
+                         'vulnerable', 'patch', 'fix', 'mitigation', 'detection',
+                         'security', 'hack', 'rce', 'exploit', 'vulnerability']
+        if not any(term in text for term in security_terms):
+            return False
+        return True
+
+    # For operational categories, still need to be strict
     if threat.category not in OPERATIONAL_CATEGORIES:
         return False
 

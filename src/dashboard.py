@@ -56,9 +56,11 @@ class ThreatResponse(BaseModel):
 # API Routes
 @app.get("/api/threats/recent")
 async def get_recent_threats(days: int = 7, limit: int = 25, page: int = 1, source: Optional[str] = None):
-    """Get recent threats with pagination and source filter (operational only)."""
+    """Get recent threats with pagination and source filter."""
     all_threats = agg.get_recent_threats(limit=limit*4, days=days)
-    threats = filter_operational_threats(all_threats)
+
+    # Don't double-filter - threats already filtered during aggregation
+    threats = all_threats
 
     # Filter by source if provided
     if source:
@@ -80,9 +82,11 @@ async def get_recent_threats(days: int = 7, limit: int = 25, page: int = 1, sour
 
 @app.get("/api/threats/critical")
 async def get_critical_threats(limit: int = 25, page: int = 1, source: Optional[str] = None):
-    """Get critical threats with pagination and source filter (operational only)."""
+    """Get critical threats with pagination and source filter."""
     all_threats = agg.get_critical_threats(limit=limit*4)
-    threats = filter_operational_threats(all_threats)
+
+    # Don't double-filter - threats already filtered during aggregation
+    threats = all_threats
 
     # Filter by source if provided
     if source:
@@ -388,6 +392,44 @@ async def index():
             background: rgba(0, 80, 25, 0.08);
             color: #005016;
             border-color: #005016;
+        }
+
+        .threat-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(0, 204, 51, 0.1);
+            border: 1px solid #00cc33;
+            color: #00cc33;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            border-radius: 0;
+            text-transform: uppercase;
+        }
+
+        .tag.cve {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .tag.actor {
+            border-color: #ffa500;
+            color: #ffa500;
+            background: rgba(255, 165, 0, 0.1);
+        }
+
+        .tag.package {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
         }
 
         .threat-meta {
@@ -697,26 +739,51 @@ async def index():
                 return;
             }
 
-            container.innerHTML = threats.map(threat => `
+            container.innerHTML = threats.map(threat => {
+                // Extract threat indicators from title and description
+                let tags = [];
+                const text = (threat.title + ' ' + threat.description).toLowerCase();
+
+                // CVEs
+                threat.cves.forEach(cve => tags.push({ text: cve, type: 'cve' }));
+
+                // Threat actors (common patterns)
+                const actors = ['apt', 'apt-', 'lazarus', 'fin', 'wizard spider', 'wizard', 'turla', 'carbanak', 'cobalt', 'emotet', 'trickbot'];
+                actors.forEach(actor => {
+                    if (text.includes(actor.toLowerCase()) && !tags.find(t => t.text.toLowerCase().includes(actor))) {
+                        tags.push({ text: actor.toUpperCase(), type: 'actor' });
+                    }
+                });
+
+                // Packages/Software (common ones)
+                const packages = ['npm', 'pypi', 'pip', 'maven', 'nuget', 'docker', 'kubernetes', 'kubernetes', 'electron', 'nodejs', 'ruby', 'java'];
+                packages.forEach(pkg => {
+                    if (text.includes(pkg.toLowerCase()) && !tags.find(t => t.text.toLowerCase().includes(pkg))) {
+                        tags.push({ text: pkg.toUpperCase(), type: 'package' });
+                    }
+                });
+
+                return `
                 <div class="threat-item ${threat.severity}">
                     <div class="threat-header">
                         <div class="threat-title">${escapeHtml(threat.title)}</div>
                         <span class="threat-badge severity-${threat.severity}">${threat.severity}</span>
                     </div>
+                    ${tags.length > 0 ? `
+                        <div class="threat-tags">
+                            ${tags.map(tag => `<span class="tag ${tag.type}">${escapeHtml(tag.text)}</span>`).join('')}
+                        </div>
+                    ` : ''}
                     <div class="threat-meta">
                         <span>📍 ${escapeHtml(threat.source)}</span>
                         <span>📂 ${threat.category}</span>
                         <span>🕐 ${formatDate(threat.published_date)}</span>
                     </div>
-                    ${threat.cves.length > 0 ? `
-                        <div class="threat-cves">
-                            ${threat.cves.map(cve => `<span class="cve-tag">${cve}</span>`).join('')}
-                        </div>
-                    ` : ''}
                     <div class="threat-description">${escapeHtml(threat.description)}</div>
                     <a href="${threat.url}" target="_blank" class="threat-url">Read more →</a>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // Search
