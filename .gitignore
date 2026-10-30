@@ -1,1 +1,37 @@
+# Data & Database
 data/
+*.db
+threats.db
+
+# Environment & Credentials
+.env
+.env.local
+.env.*.local
+config.local.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Local documentation (for reference only)
+LOCAL_DOCS/
