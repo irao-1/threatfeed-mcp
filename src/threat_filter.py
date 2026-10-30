@@ -77,6 +77,12 @@ BLOCKED_KEYWORDS = {
     'python release', 'new feature', 'update', 'version',
     'api', 'framework', 'library', 'development',
 
+    # Marketing/Press releases
+    'magic quadrant', 'gartner', 'leader', 'named a',
+    'press release', 'announces', 'marketplace',
+    'product launch', 'new product', 'new service',
+    'partnership', 'partners with', 'integrates with',
+
     # Non-security
     'ai model', 'gpt', 'llm', 'language model',
     'fbi letter', 'mlk', 'history', 'politics',
