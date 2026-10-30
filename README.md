@@ -12,13 +12,14 @@
 
 ## ✨ What It Does
 
-ThreatFeed automatically:
-- 🌐 Monitors **6+ security sources currently** (Bleeping Computer, HackerNews, Reddit, SecurityWeek, CISA KEV)
-- 🔍 **Filters noise** - removes business news, keeps security threats only
-- 📊 **Scores severity** - automatically categorizes threats as critical/high/medium/low
-- 💾 **Stores locally** - 100% local SQLite database, no cloud
-- 📱 **3 interfaces** - web dashboard, CLI commands, MCP for Claude
-- ⏰ **24/7 monitoring** - automatic hourly threat fetching
+ThreatAtlas automatically:
+- 🌐 Monitors **7 security sources** (Bleeping Computer, HackerNews, Reddit, SecurityWeek, Unit42, Palo Alto Blog, CISA KEV)
+- 🔍 **Smart filtering** - focuses on CVEs, breaches, malware, APTs, and zero-days. Blocks announcements and product news
+- 📊 **Severity scoring** - categorizes threats as critical/high/medium/low automatically
+- 🏷️ **Threat tags** - highlights CVEs, threat actors, and affected packages for quick scanning
+- 💾 **100% local** - SQLite database, zero cloud dependencies
+- 📱 **Dashboard + CLI** - web interface and command-line tools
+- ⏰ **Always watching** - automatic hourly threat fetching
 
 ---
 
@@ -128,9 +129,25 @@ python src/aggregator.py --fetch
 ```
 
 
+## 👤 Credits
+
+<sub>🔧 **Conceived, designed, and developed by Ais**
+
+🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
+
+---
+
 ## 📝 License
 
 MIT License - See [LICENSE](LICENSE) file
+
+---
+
+## 🤖 Built with Claude
+
+This project was developed using [Claude](https://claude.ai) AI. The architecture, filtering logic, dashboard design, and security implementation were all designed and built with AI assistance.
+
+For technical details, security information, and contribution guidelines, see [SECURITY.md](SECURITY.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
