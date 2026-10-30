@@ -1,0 +1,113 @@
+# ThreatFeed Configuration
+
+# Database settings
+database:
+  path: "data/threats.db"
+  type: "sqlite"  # Options: sqlite, postgresql
+  # For PostgreSQL: postgresql://user:password@localhost:5432/threatfeed
+
+# Aggregation settings
+aggregation:
+  # Fetch interval in minutes (use --interval flag to override)
+  interval_minutes: 60
+
+  # Data retention
+  retention_days: 90
+
+  # Deduplication
+  dedup_threshold: 0.7  # 0-1 scale, higher = stricter
+  max_recent_for_comparison: 10
+
+# Threat sources to enable
+sources:
+  bleeping_computer:
+    enabled: true
+    url: "https://www.bleepingcomputer.com/feed/"
+
+  palo_alto:
+    enabled: true
+    url: "https://feed.unit42.paloaltonetworks.com/"
+
+  hackernews:
+    enabled: true
+    url: "https://news.ycombinator.com/rss"
+    # Optional: add filters
+    keywords: ["security", "vulnerability", "breach"]
+
+  # Add custom sources here
+  custom:
+    enabled: false
+    url: "https://example.com/feed"
+    name: "Custom Source"
+
+# Severity scoring
+severity_scoring:
+  critical_keywords:
+    - "zero-day"
+    - "rce"
+    - "remote code execution"
+    - "arbitrary code execution"
+    - "exploit available"
+    - "worm"
+    - "spreading"
+    - "unpatched"
+
+  high_keywords:
+    - "vulnerability"
+    - "exploit"
+    - "privilege escalation"
+
+# Processing
+processing:
+  # Extract CVEs from titles/descriptions
+  extract_cves: true
+
+  # Extract keywords
+  extract_keywords: true
+  max_keywords: 5
+
+  # Description length limit (chars)
+  description_limit: 500
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "threatfeed.log"
+  file_size_mb: 10
+  backup_count: 5
+
+# Dashboard
+dashboard:
+  host: "0.0.0.0"
+  port: 8000
+  reload_interval_minutes: 5
+  max_threats_per_page: 50
+
+# MCP Server
+mcp_server:
+  default_limit: 50
+  default_days: 7
+  max_limit: 500
+
+# Notifications (optional)
+notifications:
+  enabled: false
+  # Slack webhook
+  slack_webhook: ""
+  # Email settings
+  email_enabled: false
+  email_recipients: []
+  smtp_server: ""
+  smtp_port: 587
+  # Conditions
+  alert_on_critical: true
+  alert_on_new_cve: true
+
+# Cleanup
+cleanup:
+  # Run cleanup at this hour (24-hour format)
+  hour: 2
+  minute: 0
+  # Remove duplicates older than N days
+  cleanup_duplicates_older_than_days: 90
