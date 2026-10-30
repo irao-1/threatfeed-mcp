@@ -105,9 +105,9 @@ THREAT_SOURCES = {
         'SecurityWeek',
         'https://www.securityweek.com/feed/'
     ),
-    'paloalto_research': RSSSource(
-        'Palo_Research',
-        'https://researchcenter.paloaltonetworks.com/feed/'
+    'unit42_research': RSSSource(
+        'Unit42_Research',
+        'https://unit42.paloaltonetworks.com/feed/'
     ),
     'paloalto_blog': RSSSource(
         'Palo_Blog',
@@ -124,27 +124,36 @@ def get_all_sources() -> dict:
 
 def fetch_all_threats(dedup_threshold: float = 0.7, days: int = 7) -> tuple:
     """Fetch from all sources and deduplicate.
-    
+
     Args:
         dedup_threshold: Similarity threshold for deduplication (0-1)
         days: Only fetch threats from last N days
     """
     all_threats = []
+    trusted_threats = []  # Keep trusted sources separate
     stats = {}
+
+    TRUSTED_SOURCES = {'Unit42_Research', 'Palo_Blog'}
 
     from datetime import timedelta
     cutoff_date = datetime.utcnow() - timedelta(days=days)
-    
+
     for source_name, source in THREAT_SOURCES.items():
         try:
             threats = source.fetch()
-            # Filter by date
+            # Filter by date - apply to all sources
             filtered_threats = [t for t in threats if t.published_date > cutoff_date]
+
             stats[source.name] = {
                 'fetched': len(filtered_threats),
                 'errors': None
             }
-            all_threats.extend(filtered_threats)
+
+            # Separate trusted sources from others
+            if source.name in TRUSTED_SOURCES:
+                trusted_threats.extend(filtered_threats)
+            else:
+                all_threats.extend(filtered_threats)
         except Exception as e:
             logger.error(f"Error fetching from {source_name}: {e}")
             stats[source.name] = {
@@ -152,7 +161,7 @@ def fetch_all_threats(dedup_threshold: float = 0.7, days: int = 7) -> tuple:
                 'errors': str(e)
             }
 
-    # Deduplication
+    # Deduplication - only for non-trusted sources
     unique_threats = []
     seen_ids = set()
 
@@ -172,5 +181,8 @@ def fetch_all_threats(dedup_threshold: float = 0.7, days: int = 7) -> tuple:
         if not is_similar:
             seen_ids.add(threat.id)
             unique_threats.append(threat)
+
+    # Add trusted sources WITHOUT deduplication
+    unique_threats.extend(trusted_threats)
 
     return unique_threats, stats

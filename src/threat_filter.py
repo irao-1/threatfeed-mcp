@@ -2,6 +2,15 @@
 
 from models import ThreatCategory, SeverityLevel
 
+# TRUSTED SECURITY SOURCES - More lenient filtering
+TRUSTED_SOURCES = {
+    'Unit42_Research',
+    'Palo_Blog',
+    'Bleeping Computer',
+    'SecurityWeek',
+    'CISA KEV',
+}
+
 # ONLY these count as real security threats
 OPERATIONAL_CATEGORIES = {
     ThreatCategory.CVE,
@@ -96,8 +105,11 @@ def is_operational_threat(threat):
 
     Safety Valves: Critical threat indicators ALWAYS retained for triage,
     detection engineering, threat hunting, or security bulletins.
+
+    Trusted sources get lenient filtering since they don't publish random news.
     """
     text = (threat.title + ' ' + threat.description).lower()
+    is_trusted_source = threat.source in TRUSTED_SOURCES
 
     # SAFETY VALVE 1: Check for critical threat indicators (always retain)
     for keyword in CRITICAL_KEYWORDS:
@@ -112,7 +124,21 @@ def is_operational_threat(threat):
         if product.lower() in text:
             return True
 
-    # Must be in OPERATIONAL categories
+    # TRUSTED SOURCES: More lenient - just need to avoid blocked keywords
+    if is_trusted_source:
+        # Check for blocked keywords (suppress non-security noise)
+        for keyword in BLOCKED_KEYWORDS:
+            if keyword.lower() in text:
+                return False
+        # For trusted sources, accept if it's security-related or operational category
+        if threat.category in OPERATIONAL_CATEGORIES:
+            return True
+        # Even general category from trusted sources is usually security-related
+        if threat.category == ThreatCategory.GENERAL:
+            return True
+        return False
+
+    # NON-TRUSTED SOURCES: Strict filtering - must be operational category
     if threat.category not in OPERATIONAL_CATEGORIES:
         return False
 
