@@ -86,7 +86,7 @@ BLOCKED_KEYWORDS = {
     'api', 'framework', 'library', 'development',
 
     # Marketing/Press releases
-    'magic quadrant', 'gartner', 'leader', 'named a',
+    'announcement', 'magic quadrant', 'gartner', 'leader', 'named a',
     'press release', 'announces', 'marketplace', 'openai marketplace',
     'product launch', 'new product', 'new service',
     'partnership', 'partners with', 'integrates with',
