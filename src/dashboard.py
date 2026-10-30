@@ -528,6 +528,9 @@ async def index():
                 <option value="breach">Breach</option>
                 <option value="ransomware">Ransomware</option>
             </select>
+            <select id="sourceFilter">
+                <option value="">All Sources</option>
+            </select>
             <select id="daysFilter">
                 <option value="7">Last 7 days</option>
                 <option value="30">Last 30 days</option>
@@ -546,11 +549,21 @@ async def index():
             <div id="threatsContainer" class="threats-container">
                 <div class="loading"><div class="spinner"></div></div>
             </div>
+            <div id="paginationRecent" style="display:none; margin-top:20px; text-align:center; color:#a0a0a0;">
+                <button onclick="previousPage('recent')" style="margin-right:10px;">← Previous</button>
+                <span id="pageInfoRecent">Page 1</span>
+                <button onclick="nextPage('recent')" style="margin-left:10px;">Next →</button>
+            </div>
         </div>
 
         <div id="criticalTab" class="tab-content">
             <div id="criticalContainer" class="threats-container">
                 <div class="loading"><div class="spinner"></div></div>
+            </div>
+            <div id="paginationCritical" style="display:none; margin-top:20px; text-align:center; color:#a0a0a0;">
+                <button onclick="previousPage('critical')" style="margin-right:10px;">← Previous</button>
+                <span id="pageInfoCritical">Page 1</span>
+                <button onclick="nextPage('critical')" style="margin-left:10px;">Next →</button>
             </div>
         </div>
     </div>
@@ -560,7 +573,11 @@ async def index():
     </footer>
 
     <script>
-        // Load statistics
+        // Pagination state
+        let currentPage = { recent: 1, critical: 1 };
+        let totalPages = { recent: 1, critical: 1 };
+
+        // Load statistics and sources
         async function loadStats() {
             try {
                 const response = await fetch('/api/statistics');
@@ -586,6 +603,17 @@ async def index():
                 `;
 
                 document.getElementById('lastUpdate').innerText = new Date(data.last_fetch).toLocaleString();
+
+                // Load sources for filter
+                const sourcesResponse = await fetch('/api/sources');
+                const sourcesData = await sourcesResponse.json();
+                const sourceSelect = document.getElementById('sourceFilter');
+                sourcesData.sources.forEach(source => {
+                    const option = document.createElement('option');
+                    option.value = source;
+                    option.textContent = source;
+                    sourceSelect.appendChild(option);
+                });
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
@@ -595,9 +623,16 @@ async def index():
         async function loadRecent() {
             try {
                 const days = document.getElementById('daysFilter').value || 7;
-                const response = await fetch(`/api/threats/recent?days=${days}&limit=50`);
+                const source = document.getElementById('sourceFilter').value;
+                let url = `/api/threats/recent?days=${days}&limit=25&page=${currentPage.recent}`;
+                if (source) url += `&source=${encodeURIComponent(source)}`;
+
+                const response = await fetch(url);
                 const data = await response.json();
                 displayThreats(data.threats, 'threatsContainer');
+
+                totalPages.recent = data.pages || 1;
+                updatePagination('recent');
             } catch (error) {
                 console.error('Error loading recent threats:', error);
                 document.getElementById('threatsContainer').innerHTML = '<div class="no-data">Error loading threats</div>';
@@ -607,9 +642,16 @@ async def index():
         // Load critical threats
         async function loadCritical() {
             try {
-                const response = await fetch('/api/threats/critical?limit=50');
+                const source = document.getElementById('sourceFilter').value;
+                let url = `/api/threats/critical?limit=25&page=${currentPage.critical}`;
+                if (source) url += `&source=${encodeURIComponent(source)}`;
+
+                const response = await fetch(url);
                 const data = await response.json();
                 displayThreats(data.threats, 'criticalContainer');
+
+                totalPages.critical = data.pages || 1;
+                updatePagination('critical');
             } catch (error) {
                 console.error('Error loading critical threats:', error);
                 document.getElementById('criticalContainer').innerHTML = '<div class="no-data">Error loading threats</div>';
@@ -730,6 +772,44 @@ async def index():
             if (days < 7) return `${days}d ago`;
             return date.toLocaleDateString();
         }
+
+        // Pagination helpers
+        function updatePagination(tab) {
+            const pageInfo = document.getElementById(`pageInfo${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            const pagination = document.getElementById(`pagination${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+
+            pageInfo.textContent = `Page ${currentPage[tab]} of ${totalPages[tab]}`;
+            pagination.style.display = totalPages[tab] > 1 ? 'block' : 'none';
+        }
+
+        function nextPage(tab) {
+            if (currentPage[tab] < totalPages[tab]) {
+                currentPage[tab]++;
+                if (tab === 'recent') loadRecent();
+                else loadCritical();
+            }
+        }
+
+        function previousPage(tab) {
+            if (currentPage[tab] > 1) {
+                currentPage[tab]--;
+                if (tab === 'recent') loadRecent();
+                else loadCritical();
+            }
+        }
+
+        // Reset pagination when filters change
+        document.getElementById('sourceFilter').addEventListener('change', () => {
+            currentPage.recent = 1;
+            currentPage.critical = 1;
+            loadRecent();
+            loadCritical();
+        });
+
+        document.getElementById('daysFilter').addEventListener('change', () => {
+            currentPage.recent = 1;
+            loadRecent();
+        });
 
         // Initial load
         loadStats();
