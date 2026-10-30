@@ -145,13 +145,3 @@ MIT License - See [LICENSE](LICENSE) file
 🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
 
 ---
-
-## 🎯 Ready to Start?
-
-```bash
-./setup.sh && python src/dashboard.py
-```
-
-Then open: **http://localhost:8001** 🚀
-
----
