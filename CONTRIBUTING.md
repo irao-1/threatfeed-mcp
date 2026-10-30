@@ -22,14 +22,6 @@ We love contributions! Here's how you can help.
 python -m pytest tests/
 ```
 
-### Code Style
-
-Follow PEP 8:
-```bash
-pip install flake8
-flake8 src/
-```
-
 ### Adding New Threat Sources
 
 1. Create a new source class in `src/sources/`:
