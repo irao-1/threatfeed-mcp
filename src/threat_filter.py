@@ -93,6 +93,8 @@ BLOCKED_KEYWORDS = {
     'partnership', 'partners with', 'integrates with',
     'prisma', 'continuous ai defense', 'ai defense',
     'gartner magic quadrant', 'recognized as a leader',
+    'privileged access management', 'pam', 'award',
+    'eighth consecutive', 'positioned furthest',
 
     # Non-security
     'ai model', 'gpt', 'llm', 'language model',
