@@ -1,6 +1,6 @@
 # 🛡️ ThreatAtlas
 
-> **Showcase Project** — Reference implementation of a real-time threat intelligence aggregator
+Implementation of a real-time threat intelligence aggregator
 
 **Real-time threat intelligence aggregator** that monitors multiple security sources, filters for operational threats, and provides web dashboard, CLI, and optional MCP interfaces.
 
