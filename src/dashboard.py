@@ -694,6 +694,7 @@ async def index():
             const keywords = document.getElementById('searchInput').value;
             const severity = document.getElementById('severityFilter').value;
             const category = document.getElementById('categoryFilter').value;
+            const source = document.getElementById('sourceFilter').value;
             const days = document.getElementById('daysFilter').value;
 
             document.getElementById('threatsContainer').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
@@ -706,6 +707,7 @@ async def index():
                         keywords: keywords || null,
                         severity: severity || null,
                         category: category || null,
+                        source: source || null,
                         days: parseInt(days) || 7,
                         limit: 50
                     })
@@ -826,4 +828,4 @@ async def index():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
