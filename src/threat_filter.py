@@ -95,6 +95,7 @@ BLOCKED_KEYWORDS = {
     'gartner magic quadrant', 'recognized as a leader',
     'privileged access management', 'pam', 'award',
     'eighth consecutive', 'positioned furthest',
+    'products and services', 'introducing', 'managed agentic',
 
     # Non-security
     'ai model', 'gpt', 'llm', 'language model',
@@ -125,6 +126,9 @@ def is_operational_threat(threat):
         '/news/',
         '/company/',
         '/careers/',
+        '/category/announcement/',
+        '/category/partners/',
+        '/category/products-and-services/',
     ]
     for pattern in blocked_url_patterns:
         if pattern in url:
