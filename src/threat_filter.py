@@ -88,9 +88,11 @@ BLOCKED_KEYWORDS = {
 
     # Marketing/Press releases
     'magic quadrant', 'gartner', 'leader', 'named a',
-    'press release', 'announces', 'marketplace',
+    'press release', 'announces', 'marketplace', 'openai marketplace',
     'product launch', 'new product', 'new service',
     'partnership', 'partners with', 'integrates with',
+    'prisma', 'continuous ai defense', 'ai defense',
+    'gartner magic quadrant', 'recognized as a leader',
 
     # Non-security
     'ai model', 'gpt', 'llm', 'language model',
@@ -124,18 +126,24 @@ def is_operational_threat(threat):
         if product.lower() in text:
             return True
 
-    # TRUSTED SOURCES: More lenient - just need to avoid blocked keywords
+    # TRUSTED SOURCES: More lenient - but still filter marketing
     if is_trusted_source:
-        # Check for blocked keywords (suppress non-security noise)
+        # ALWAYS block marketing content, even from trusted sources
         for keyword in BLOCKED_KEYWORDS:
             if keyword.lower() in text:
                 return False
         # For trusted sources, accept if it's security-related or operational category
         if threat.category in OPERATIONAL_CATEGORIES:
             return True
-        # Even general category from trusted sources is usually security-related
+        # General category from trusted sources: only if no blocked keywords
+        # and has security-related content
         if threat.category == ThreatCategory.GENERAL:
-            return True
+            # If text contains actual security terms, keep it
+            security_terms = ['cve', 'vulnerability', 'exploit', 'malware', 'breach',
+                            'ransomware', 'attack', 'threat', 'compromised', 'exposed',
+                            'vulnerable', 'patch', 'fix', 'mitigation', 'detection']
+            if any(term in text for term in security_terms):
+                return True
         return False
 
     # NON-TRUSTED SOURCES: Strict filtering - must be operational category
