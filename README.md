@@ -80,44 +80,6 @@ Edit `config.yaml` to customize:
 
 ---
 
-## 📚 Full Documentation
-
-For detailed information:
-
-- **Setup & Installation** → `LOCAL_DOCS/GET_ZIP_TO_DESKTOP.md`
-- **All Commands** → `LOCAL_DOCS/WHAT_IS_THREATFEED.md`
-- **Using Without Claude** → `LOCAL_DOCS/WITHOUT_CLAUDE.md`
-- **Security Guidelines** → `LOCAL_DOCS/SECURITY_GUIDE.md`
-- **Platform Support** → `LOCAL_DOCS/PLATFORM_INDEPENDENCE.md`
-- **Testing Guide** → `LOCAL_DOCS/TERMINAL_TESTING_GUIDE.md`
-- **Example Outputs** → `LOCAL_DOCS/EXAMPLE_OUTPUTS.md`
-
----
-
-## 🛡️ Security
-
-✅ **Safe by Design:**
-- No code injection vulnerabilities
-- No SQL injection
-- Local storage only
-- HTTPS-only feeds
-- Trusted sources only
-
-✅ **Repository Protected:**
-- Branch protection enabled
-- Dependabot alerts active
-- Secret scanning enabled
-
----
-
-## 🌍 Platform Support
-
-- ✅ **Mac** - Fully supported
-- ✅ **Linux** - Fully supported  
-- ✅ **Windows** - Supported with WSL2
-
----
-
 ## 📦 Requirements
 
 - Python 3.9+
@@ -159,19 +121,10 @@ rm data/threats.db
 python src/aggregator.py --fetch
 ```
 
-For more help, check `LOCAL_DOCS/TERMINAL_TESTING_GUIDE.md`
-
----
 
 ## 📝 License
 
 MIT License - See [LICENSE](LICENSE) file
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please review security guidelines in `LOCAL_DOCS/SECURITY_GUIDE.md`
 
 ---
 
@@ -184,5 +137,3 @@ Contributions welcome! Please review security guidelines in `LOCAL_DOCS/SECURITY
 Then open: **http://localhost:8000** 🚀
 
 ---
-
-**Questions?** Check the docs in `LOCAL_DOCS/` folder
