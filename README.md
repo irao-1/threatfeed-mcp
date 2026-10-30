@@ -40,7 +40,7 @@ python src/aggregator.py --stats
 python src/aggregator.py --critical
 
 # Search threats
-python src/aggregator.py --search "kubernetes" --severity high
+python src/aggregator.py --search "threat_name" --severity high
 
 # Run web dashboard
 python src/dashboard.py
