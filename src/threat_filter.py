@@ -115,6 +115,11 @@ def is_operational_threat(threat):
     text = (threat.title + ' ' + threat.description).lower()
     is_trusted_source = threat.source in TRUSTED_SOURCES
 
+    # FIRST: Check for BLOCKED keywords (marketing/noise) - ALWAYS filter these out
+    for keyword in BLOCKED_KEYWORDS:
+        if keyword.lower() in text:
+            return False
+
     # SAFETY VALVE 1: Check for critical threat indicators (always retain)
     for keyword in CRITICAL_KEYWORDS:
         if keyword.lower() in text:

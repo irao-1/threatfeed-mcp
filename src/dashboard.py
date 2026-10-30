@@ -603,10 +603,16 @@ async def index():
                     minute: '2-digit'
                 });
 
+                const daysFilter = document.getElementById('daysFilter').value || '7';
+                const daysText = daysFilter === '7' ? 'Last 7 days' :
+                                daysFilter === '30' ? 'Last 30 days' :
+                                daysFilter === '90' ? 'Last 90 days' : `Last ${daysFilter} days`;
+
                 document.getElementById('statsGrid').innerHTML = `
                     <div class="stat-card">
                         <div class="stat-label">Total Threats</div>
                         <div class="stat-value">${data.total_threats}</div>
+                        <div style="color: #707070; font-size: 11px; margin-top: 8px;">${daysText}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">This Week</div>
