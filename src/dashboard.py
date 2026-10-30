@@ -14,7 +14,7 @@ from threat_filter import filter_operational_threats
 from models import SeverityLevel, ThreatCategory, SearchQuery
 
 # Initialize FastAPI app
-app = FastAPI(title="ThreatFeed Dashboard", version="1.0.0")
+app = FastAPI(title="ThreatAtlas", version="1.0.0")
 
 # CORS middleware
 app.add_middleware(
@@ -191,7 +191,7 @@ async def index():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThreatFeed Dashboard</title>
+    <title>ThreatAtlas - Threat Intelligence Feed</title>
     <style>
         * {
             margin: 0;
@@ -207,18 +207,21 @@ async def index():
         }
 
         header {
-            background: #1a1f3a;
-            border-bottom: 2px solid #ff4757;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: #0a0e27;
+            border-bottom: 2px solid #00cc33;
+            padding: 30px 20px;
+            text-align: center;
         }
 
         h1 {
-            color: #ff4757;
-            font-size: 28px;
+            color: #e0e0e0;
+            font-size: 32px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .container {
@@ -235,18 +238,19 @@ async def index():
         }
 
         .stat-card {
-            background: #1a1f3a;
-            border: 1px solid #2a3f5f;
-            border-radius: 8px;
-            padding: 20px;
+            background: #1a2d1a;
+            border: 1px solid #00cc33;
+            border-radius: 0;
+            padding: 25px;
             text-align: center;
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: bold;
-            color: #ff4757;
+            color: #00cc33;
             margin: 10px 0;
+            font-family: 'Courier New', monospace;
         }
 
         .stat-label {
@@ -259,21 +263,22 @@ async def index():
         .controls {
             background: #1a1f3a;
             border: 1px solid #2a3f5f;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 20px;
             margin-bottom: 30px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: center;
         }
 
         input, select, button {
             background: #0a0e27;
-            border: 1px solid #2a3f5f;
+            border: 1px solid #00cc33;
             color: #e0e0e0;
             padding: 10px 15px;
-            border-radius: 4px;
+            border-radius: 0;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
@@ -281,12 +286,13 @@ async def index():
 
         input:focus, select:focus {
             outline: none;
-            border-color: #ff4757;
-            box-shadow: 0 0 5px rgba(255, 71, 87, 0.3);
+            border-color: #00cc33;
+            background: rgba(0, 204, 51, 0.05);
         }
 
         button {
-            background: #ff4757;
+            background: #00cc33;
+            color: #0a0e27;
             color: white;
             border: none;
             font-weight: 600;
@@ -307,34 +313,30 @@ async def index():
         .threat-item {
             background: #1a1f3a;
             border-left: 4px solid;
-            border-radius: 4px;
+            border-radius: 0;
             padding: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
 
         .threat-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: none;
+            background: #222844;
         }
 
         .threat-item.critical {
-            border-left-color: #ff4757;
-            background: rgba(255, 71, 87, 0.05);
+            border-left-color: #00cc33;
         }
 
         .threat-item.high {
-            border-left-color: #ffa502;
-            background: rgba(255, 165, 2, 0.05);
+            border-left-color: #009628;
         }
 
         .threat-item.medium {
-            border-left-color: #ffd93d;
-            background: rgba(255, 217, 61, 0.05);
+            border-left-color: #007a1f;
         }
 
         .threat-item.low {
-            border-left-color: #6bcf7f;
-            background: rgba(107, 207, 127, 0.05);
+            border-left-color: #005016;
         }
 
         .threat-header {
@@ -355,31 +357,37 @@ async def index():
         .threat-badge {
             display: inline-block;
             padding: 4px 12px;
-            border-radius: 4px;
+            border-radius: 0;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             white-space: nowrap;
+            border: 1px solid;
+            font-family: 'Courier New', monospace;
         }
 
         .severity-critical {
-            background: rgba(255, 71, 87, 0.3);
-            color: #ff4757;
+            background: rgba(0, 204, 51, 0.15);
+            color: #00cc33;
+            border-color: #00cc33;
         }
 
         .severity-high {
-            background: rgba(255, 165, 2, 0.3);
-            color: #ffa502;
+            background: rgba(0, 150, 40, 0.15);
+            color: #009628;
+            border-color: #009628;
         }
 
         .severity-medium {
-            background: rgba(255, 217, 61, 0.3);
-            color: #ffd93d;
+            background: rgba(0, 100, 30, 0.1);
+            color: #007a1f;
+            border-color: #007a1f;
         }
 
         .severity-low {
-            background: rgba(107, 207, 127, 0.3);
-            color: #6bcf7f;
+            background: rgba(0, 80, 25, 0.08);
+            color: #005016;
+            border-color: #005016;
         }
 
         .threat-meta {
@@ -443,7 +451,7 @@ async def index():
             width: 30px;
             height: 30px;
             border: 3px solid #2a3f5f;
-            border-top-color: #ff4757;
+            border-top-color: #00ff41;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -464,6 +472,7 @@ async def index():
             gap: 10px;
             margin-bottom: 20px;
             border-bottom: 2px solid #2a3f5f;
+            justify-content: center;
         }
 
         .tab-btn {
@@ -477,8 +486,8 @@ async def index():
         }
 
         .tab-btn.active {
-            color: #ff4757;
-            border-bottom-color: #ff4757;
+            color: #00cc33;
+            border-bottom-color: #00cc33;
         }
 
         .tab-btn:hover {
@@ -504,7 +513,9 @@ async def index():
 </head>
 <body>
     <header>
-        <h1>🛡️ ThreatFeed Intelligence Dashboard</h1>
+        <h1>🛡️ ThreatAtlas</h1>
+        <p style="color: #a0a0a0; font-size: 14px; margin-top: 8px; margin-bottom: 0;">Threat Intelligence Feed</p>
+        <p style="color: #707070; font-size: 12px; margin-top: 4px;">Real-time operational security threats aggregated from multiple trusted sources</p>
     </header>
 
     <div class="container">
@@ -583,6 +594,15 @@ async def index():
                 const response = await fetch('/api/statistics');
                 const data = await response.json();
 
+                const lastFetchDate = new Date(data.last_fetch);
+                const lastFetchFormatted = lastFetchDate.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
                 document.getElementById('statsGrid').innerHTML = `
                     <div class="stat-card">
                         <div class="stat-label">Total Threats</div>
@@ -599,6 +619,10 @@ async def index():
                     <div class="stat-card">
                         <div class="stat-label">Critical</div>
                         <div class="stat-value">${data.by_severity.critical || 0}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last Updated</div>
+                        <div class="stat-value" style="font-size: 16px; color: #00cc33;">${lastFetchFormatted}</div>
                     </div>
                 `;
 
