@@ -126,9 +126,9 @@ python src/aggregator.py --fetch
 
 ## 👤 Credits
 
-<sub>🔧 **Conceived, designed, and developed by Ais**
+<sub>🔧 Conceived, designed, and developed by Ais</sub>
 
-🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
+<sub>🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
 
 ---
 
@@ -140,8 +140,8 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 👤 Credits
 
-<sub>🔧 **Conceived, designed, and developed by Ais**
+<sub>🔧 Conceived, designed, and developed by Ais</sub>
 
-🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
+<sub>🤖 Claude AI was used as a development assistant for architecture discussions, implementation guidance, debugging, and documentation. Final design decisions, code review, and project direction remained with the author.</sub>
 
 ---
